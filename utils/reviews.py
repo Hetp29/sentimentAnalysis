@@ -5,9 +5,9 @@ from torchtext.data import Field, TabularDataset, BucketIterator
 def preprocessData(csv_path, test_size = 0.2, batch_size = 64):
     df = pd.read_csv(csv_path)
     df['sentiment'] = df['sentiment'].apply(lambda x: 1 if x == 'positive' else 0)
-    train_df, test_df, = train_test_split(df, test_size = test_size, random_state = 42)
+    train_df, test_df = train_test_split(df, test_size = test_size, random_state = 42)
     
-    Text = Field(sequential=True, tokensize='spacy', lower=True)
+    Text = Field(sequential=True, tokenize='spacy', lower=True)
     Label = Field(sequential=False, use_vocab=False)
     
     fields = [('text', Text), ('sentiment', Label)]
@@ -24,7 +24,7 @@ def preprocessData(csv_path, test_size = 0.2, batch_size = 64):
     train_iterator, test_iterator, = BucketIterator.splits(
         (train_data, test_data),
         batch_size = batch_size,
-        sort_key = lambda x: len(x.test),
+        sort_key = lambda x: len(x.text),
         repeat=False,
         shuffle=True
     )
